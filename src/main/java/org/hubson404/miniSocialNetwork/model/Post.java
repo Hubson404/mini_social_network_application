@@ -28,12 +28,12 @@ public class Post {
     @OneToMany(mappedBy = "post")
     @EqualsAndHashCode.Exclude
     @ToString.Exclude
-    private Set<Like> likes;
+    private Set<LikeBadge> likeBadges;
 
     @OneToMany(mappedBy = "post")
     @EqualsAndHashCode.Exclude
     @ToString.Exclude
-    private Set<Forward> forwards;
+    private Set<ForwardBadge> forwardBadges;
 
     public Post(String content, ServiceUser serviceUser) {
         this.content = content;

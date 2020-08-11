@@ -9,25 +9,25 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-public class Forward {
+public class LikeBadge {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    int forwardId;
+    private int likeId;
 
-    LocalDateTime createDate;
-
-    @ManyToOne
-    @ToString.Exclude
-    @EqualsAndHashCode.Exclude
-    ServiceUser serviceUser;
+    private LocalDateTime createDate;
 
     @ManyToOne
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
-    Post post;
+    private ServiceUser serviceUser;
 
-    public Forward(ServiceUser serviceUser, Post post) {
+    @ManyToOne
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
+    private Post post;
+
+    public LikeBadge(ServiceUser serviceUser, Post post) {
         this.createDate = LocalDateTime.now();
         this.serviceUser = serviceUser;
         this.post = post;

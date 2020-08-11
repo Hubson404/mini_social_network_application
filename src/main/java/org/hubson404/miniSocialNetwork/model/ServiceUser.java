@@ -10,12 +10,12 @@ import java.util.Set;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "USERS")
+@Table
 public class ServiceUser {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int userId;
+    private Long userId;
 
     @Column(unique = true)
     private String login;
@@ -40,12 +40,12 @@ public class ServiceUser {
     @OneToMany(mappedBy = "serviceUser")
     @EqualsAndHashCode.Exclude
     @ToString.Exclude
-    private Set<Like> likes;
+    private Set<LikeBadge> likeBadges;
 
     @OneToMany(mappedBy = "serviceUser")
     @EqualsAndHashCode.Exclude
     @ToString.Exclude
-    private Set<Forward> forwards;
+    private Set<ForwardBadge> forwardBadges;
 
     public ServiceUser(String login, String password, String accountName,
                        String userName, String avatar, boolean privateAccount) {
