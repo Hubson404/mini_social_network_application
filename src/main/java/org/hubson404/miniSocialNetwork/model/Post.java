@@ -3,6 +3,7 @@ package org.hubson404.miniSocialNetwork.model;
 import lombok.*;
 
 import javax.persistence.*;
+import java.util.Set;
 
 @Data
 @NoArgsConstructor
@@ -19,10 +20,20 @@ public class Post {
     private boolean isEdited;
     private PostType postType;
 
-    @ManyToOne//(fetch = FetchType.EAGER)
+    @ManyToOne
     @EqualsAndHashCode.Exclude
     @ToString.Exclude
     private ServiceUser serviceUser;
+
+    @OneToMany(mappedBy = "post")
+    @EqualsAndHashCode.Exclude
+    @ToString.Exclude
+    private Set<Like> likes;
+
+    @OneToMany(mappedBy = "post")
+    @EqualsAndHashCode.Exclude
+    @ToString.Exclude
+    private Set<Forward> forwards;
 
     public Post(String content, ServiceUser serviceUser) {
         this.content = content;

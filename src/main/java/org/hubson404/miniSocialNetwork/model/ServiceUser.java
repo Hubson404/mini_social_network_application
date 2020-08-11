@@ -37,6 +37,16 @@ public class ServiceUser {
     @ToString.Exclude
     private Set<Post> posts;
 
+    @OneToMany(mappedBy = "serviceUser")
+    @EqualsAndHashCode.Exclude
+    @ToString.Exclude
+    private Set<Like> likes;
+
+    @OneToMany(mappedBy = "serviceUser")
+    @EqualsAndHashCode.Exclude
+    @ToString.Exclude
+    private Set<Forward> forwards;
+
     public ServiceUser(String login, String password, String accountName,
                        String userName, String avatar, boolean privateAccount) {
         this.login = login;
@@ -48,5 +58,6 @@ public class ServiceUser {
         this.accountStatus = AccountStatus.ACTIVE;
         this.privateAccount = privateAccount;
         this.isDeleted = false;
+
     }
 }
