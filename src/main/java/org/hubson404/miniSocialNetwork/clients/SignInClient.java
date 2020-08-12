@@ -7,9 +7,7 @@ import java.util.*;
 
 public class SignInClient {
 
-    public static ServiceUser createAccount() {
-
-        Scanner scanner = new Scanner(System.in);
+    public static ServiceUser createAccount(Scanner scanner) {
 
         String login;
         String password;
@@ -31,8 +29,6 @@ public class SignInClient {
         ServiceUser serviceUser = new ServiceUser(login, password,
                 accountName, accountName, avatar, isPrivate);
 
-        new EntityDao<ServiceUser>().saveOrUpdate(serviceUser);
-
         return serviceUser;
     }
 
@@ -42,7 +38,6 @@ public class SignInClient {
 
         do {
             command = scanner.nextLine().toUpperCase();
-
         } while (!command.equals("Y")
                 && !command.equals("N"));
 
@@ -61,7 +56,6 @@ public class SignInClient {
         do {
             System.out.println("Input new accountName: ");
             accountName = scanner.nextLine();
-
         } while (accountNames.contains(accountName) || accountName.equals(""));
 
         return accountName;
@@ -80,11 +74,8 @@ public class SignInClient {
         do {
             System.out.println("Input new login: ");
             login = scanner.nextLine();
-
         } while (logins.contains(login) || login.equals(""));
 
         return login;
     }
-
-
 }
