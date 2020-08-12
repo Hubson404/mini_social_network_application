@@ -10,7 +10,6 @@ import java.util.Set;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table
 public class ServiceUser {
 
     @Id
@@ -21,7 +20,6 @@ public class ServiceUser {
     private String login;
     private String password;
 
-
     @Column(unique = true)
     private String accountName;
     private String userName;
@@ -31,8 +29,7 @@ public class ServiceUser {
     private boolean privateAccount;
     private boolean isDeleted;
 
-
-    @OneToMany(mappedBy = "serviceUser")
+    @OneToMany(mappedBy = "originalPoster")
     @EqualsAndHashCode.Exclude
     @ToString.Exclude
     private Set<Post> posts;
@@ -47,6 +44,14 @@ public class ServiceUser {
     @ToString.Exclude
     private Set<ForwardBadge> forwardBadges;
 
+//    @EqualsAndHashCode.Exclude
+//    @ToString.Exclude
+//    private Set<ServiceUser> followedUsers;
+//
+//    @EqualsAndHashCode.Exclude
+//    @ToString.Exclude
+//    private Set<ServiceUser> followers;
+
     public ServiceUser(String login, String password, String accountName,
                        String userName, String avatar, boolean privateAccount) {
         this.login = login;
@@ -60,4 +65,14 @@ public class ServiceUser {
         this.isDeleted = false;
 
     }
+
+    public void addPost(Post p) {
+        this.posts.add(p);
+        p.setOriginalPoster(this);
+    }
+
+    public void deletePost(Post p) {
+        this.posts.remove(p);
+    }
+
 }

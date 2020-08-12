@@ -23,7 +23,7 @@ public class Post {
     @ManyToOne
     @EqualsAndHashCode.Exclude
     @ToString.Exclude
-    private ServiceUser serviceUser;
+    private ServiceUser originalPoster;
 
     @OneToMany(mappedBy = "post")
     @EqualsAndHashCode.Exclude
@@ -35,10 +35,57 @@ public class Post {
     @ToString.Exclude
     private Set<ForwardBadge> forwardBadges;
 
-    public Post(String content, ServiceUser serviceUser) {
+    @ManyToMany
+    private Set<Tag> includedTags;
+
+    @OneToMany (mappedBy = "comment")
+    @EqualsAndHashCode.Exclude
+    @ToString.Exclude
+    private Set<Post> comments;
+
+    @ManyToOne
+    @EqualsAndHashCode.Exclude
+    @ToString.Exclude
+    private Post comment;
+
+    private int forwardedPostId;
+    private String forwardedPostContent;
+
+    public Post(String content, ServiceUser originalPoster) {
         this.content = content;
         this.isEdited = false;
-        this.serviceUser = serviceUser;
+        this.originalPoster = originalPoster;
         this.postType = PostType.ORIGINAL;
     }
+
+    public void addLikeBadge(LikeBadge b) {
+        this.likeBadges.add(b);
+        b.setPost(this);
+    }
+
+    public void removeLikeBadge(LikeBadge b) {
+        this.likeBadges.remove(b);
+    }
+
+    public void addForwardBadge(ForwardBadge b) {
+        this.forwardBadges.add(b);
+        b.setPost(this);
+    }
+
+    public void removeForwardBadge(ForwardBadge b) {
+        this.forwardBadges.remove(b);
+    }
+
+    public void addTag(Tag t) {
+        this.includedTags.add(t);
+        t.getTaggedPosts().add(this);
+    }
+
+    public void removeTag(Tag t) {
+        this.includedTags.remove(t);
+        t.getTaggedPosts().remove(this);
+    }
+
+
+
 }
