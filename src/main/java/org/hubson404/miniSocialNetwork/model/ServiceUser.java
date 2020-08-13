@@ -1,6 +1,7 @@
 package org.hubson404.miniSocialNetwork.model;
 
 import lombok.*;
+import org.hibernate.annotations.Cascade;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -29,7 +30,7 @@ public class ServiceUser {
     private boolean privateAccount;
     private boolean isDeleted;
 
-    @OneToMany(mappedBy = "originalPoster")
+    @OneToMany(mappedBy = "originalPoster", fetch = FetchType.EAGER)
     @EqualsAndHashCode.Exclude
     @ToString.Exclude
     private Set<Post> posts;
@@ -44,13 +45,15 @@ public class ServiceUser {
     @ToString.Exclude
     private Set<ForwardBadge> forwardBadges;
 
-//    @EqualsAndHashCode.Exclude
-//    @ToString.Exclude
-//    private Set<ServiceUser> followedUsers;
-//
-//    @EqualsAndHashCode.Exclude
-//    @ToString.Exclude
-//    private Set<ServiceUser> followers;
+    @OneToMany(mappedBy = "mainUser",fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
+    @EqualsAndHashCode.Exclude
+    @ToString.Exclude
+    private Set<FollowInstance> followedUsers;
+
+    @OneToMany(mappedBy = "followedUser",fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
+    @EqualsAndHashCode.Exclude
+    @ToString.Exclude
+    private Set<FollowInstance> followers;
 
     public ServiceUser(String login, String password, String accountName,
                        String userName, String avatar, boolean privateAccount) {
@@ -69,6 +72,18 @@ public class ServiceUser {
     public void addPost(Post p) {
         this.posts.add(p);
         p.setOriginalPoster(this);
+    }
+
+    public void followUser(ServiceUser followedUser) {
+        FollowInstance followInstance = new FollowInstance(followedUser, this);
+        this.followedUsers.add(followInstance);
+        followedUser.getFollowers().add(followInstance);
+    }
+
+    public void unfollowUser(ServiceUser followedUser) {
+        FollowInstance followInstance = new FollowInstance(followedUser, this);
+        this.followedUsers.remove(followInstance);
+        followedUser.getFollowers().remove(followInstance);
     }
 
     public void deletePost(Post p) {

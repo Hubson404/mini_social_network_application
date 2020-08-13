@@ -30,5 +30,6 @@
         <mapping class="org.hubson404.miniSocialNetwork.model.LikeBadge"/>
         <mapping class="org.hubson404.miniSocialNetwork.model.ForwardBadge"/>
         <mapping class="org.hubson404.miniSocialNetwork.model.Tag"/>
+        <mapping class="org.hubson404.miniSocialNetwork.model.FollowInstance"/>
     </session-factory>
 </hibernate-configuration>
