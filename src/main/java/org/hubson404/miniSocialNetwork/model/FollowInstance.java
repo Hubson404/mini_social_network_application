@@ -9,7 +9,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(uniqueConstraints = @UniqueConstraint(columnNames = {"followedUser", "mainUser"}) )
+@Table(uniqueConstraints = @UniqueConstraint(columnNames = {"followedUser_userId", "mainUser_userId"}) )
 public class FollowInstance {
 
     @Id
