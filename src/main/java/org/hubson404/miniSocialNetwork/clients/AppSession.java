@@ -19,24 +19,25 @@ public class AppSession {
     public void openSession(Scanner scanner) {
         System.out.println(spacer + "\n" + greeting + "\n" + spacer);
         LoggingInClient loggingInClient = new LoggingInClient();
-        System.out.println("Select command: \n1) LOG IN\n2) CREATE ACCOUNT");
+        String command;
 
-        String command = scanner.nextLine();
+        do {
+            System.out.println("Select command: \n1) LOG IN\n2) CREATE ACCOUNT");
+            command = scanner.nextLine();
+            switch (command) {
+                case "1":
+                    loggedUser = loggingInClient.logIn(scanner).get();
+                    isLoggedIn = true;
+                    break;
+                case "2":
+                    userEntityDao.saveOrUpdate(SignInClient.createAccount(scanner));
+                    break;
 
-        switch (command) {
-            case "1":
-                loggedUser = loggingInClient.logIn(scanner).get();
-                isLoggedIn = true;
-                break;
-            case "2":
-                userEntityDao.saveOrUpdate(SignInClient.createAccount(scanner));
-                loggedUser = loggingInClient.logIn(scanner).get();
-                isLoggedIn = true;
-                break;
-            default:
-                System.out.println("Command unknown.");
-                break;
-        }
+                default:
+                    System.out.println("Command unknown.");
+                    break;
+            }
+        }while (!isLoggedIn);
 
         do {
             System.out.println("Select command: \n1) CREATE POST\n2) LOG OUT");
