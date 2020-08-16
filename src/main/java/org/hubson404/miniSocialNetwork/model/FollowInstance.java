@@ -1,6 +1,7 @@
 package org.hubson404.miniSocialNetwork.model;
 
 import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -26,11 +27,11 @@ public class FollowInstance {
     @ToString.Exclude
     private ServiceUser mainUser;
 
+    @CreationTimestamp
     private LocalDateTime createDate;
 
     public FollowInstance(ServiceUser followedUser, ServiceUser mainUser) {
         this.followedUser = followedUser;
         this.mainUser = mainUser;
-        this.createDate = LocalDateTime.now();
     }
 }

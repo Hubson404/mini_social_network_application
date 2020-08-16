@@ -2,6 +2,7 @@ package org.hubson404.miniSocialNetwork.model;
 
 import lombok.*;
 import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.CreationTimestamp;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -24,6 +25,8 @@ public class ServiceUser {
     @Column(unique = true)
     private String accountName;
     private String userName;
+
+    @CreationTimestamp
     private LocalDateTime createDate;
     private String avatar;
     private AccountStatus accountStatus;
@@ -61,7 +64,6 @@ public class ServiceUser {
         this.password = password;
         this.accountName = accountName;
         this.userName = userName;
-        this.createDate = LocalDateTime.now();
         this.avatar = avatar;
         this.accountStatus = AccountStatus.ACTIVE;
         this.privateAccount = privateAccount;

@@ -1,6 +1,7 @@
 package org.hubson404.miniSocialNetwork.model;
 
 import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -15,6 +16,7 @@ public class ForwardBadge {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     int forwardId;
 
+    @CreationTimestamp
     LocalDateTime createDate;
 
     @ManyToOne
@@ -28,7 +30,6 @@ public class ForwardBadge {
     Post post;
 
     public ForwardBadge(ServiceUser serviceUser, Post post) {
-        this.createDate = LocalDateTime.now();
         this.serviceUser = serviceUser;
         this.post = post;
     }

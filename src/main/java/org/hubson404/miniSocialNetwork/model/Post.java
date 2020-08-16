@@ -1,6 +1,7 @@
 package org.hubson404.miniSocialNetwork.model;
 
 import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
 
 import javax.persistence.*;
 import java.util.Set;
@@ -18,6 +19,8 @@ public class Post {
     @Column(length = 160)
     private String content;
     private boolean isEdited;
+    @CreationTimestamp
+    private LocalDateTime createDate;
     private PostType postType;
 
     @ManyToOne
