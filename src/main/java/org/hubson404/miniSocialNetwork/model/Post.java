@@ -4,6 +4,8 @@ import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
+import java.util.HashSet;
 import java.util.Set;
 
 @Data
@@ -14,7 +16,7 @@ public class Post {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int postId;
+    private Long postId;
 
     @Column(length = 160)
     private String content;
@@ -23,17 +25,17 @@ public class Post {
     private LocalDateTime createDate;
     private PostType postType;
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL)
     @EqualsAndHashCode.Exclude
     @ToString.Exclude
     private ServiceUser originalPoster;
 
-    @OneToMany(mappedBy = "post")
+    @OneToMany(mappedBy = "post", fetch = FetchType.EAGER)
     @EqualsAndHashCode.Exclude
     @ToString.Exclude
     private Set<LikeBadge> likeBadges;
 
-    @OneToMany(mappedBy = "post")
+    @OneToMany(mappedBy = "post", fetch = FetchType.EAGER)
     @EqualsAndHashCode.Exclude
     @ToString.Exclude
     private Set<ForwardBadge> forwardBadges;
@@ -41,24 +43,31 @@ public class Post {
     @ManyToMany
     private Set<Tag> includedTags;
 
-    @OneToMany (mappedBy = "comment")
+    @OneToMany(mappedBy = "commentPost", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @EqualsAndHashCode.Exclude
     @ToString.Exclude
-    private Set<Post> comments;
+    private Set<CommentInstance> comments;
 
-    @ManyToOne
+    @OneToOne(mappedBy = "mainPost", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @EqualsAndHashCode.Exclude
     @ToString.Exclude
-    private Post comment;
+    private CommentInstance mainPost;
 
     private int forwardedPostId;
     private String forwardedPostContent;
 
-    public Post(String content, ServiceUser originalPoster) {
+    public Post(String content, PostType postType, ServiceUser originalPoster) {
         this.content = content;
         this.isEdited = false;
+        this.postType = postType;
         this.originalPoster = originalPoster;
-        this.postType = PostType.ORIGINAL;
+    }
+
+    public CommentInstance commentPost(Post comment) {
+        CommentInstance ci = new CommentInstance(comment, this);
+        this.comments.add(ci);
+        comment.setMainPost(ci);
+        return ci;
     }
 
     public void addLikeBadge(LikeBadge b) {
@@ -88,7 +97,6 @@ public class Post {
         this.includedTags.remove(t);
         t.getTaggedPosts().remove(this);
     }
-
 
 
 }
