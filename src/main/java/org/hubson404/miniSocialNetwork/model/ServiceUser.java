@@ -12,7 +12,7 @@ import java.util.Set;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-public class ServiceUser {
+public class ServiceUser implements UserNameSearchable{
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
