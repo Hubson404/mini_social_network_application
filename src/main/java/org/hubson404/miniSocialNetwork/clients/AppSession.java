@@ -5,6 +5,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hubson404.miniSocialNetwork.database.EntityDao;
 import org.hubson404.miniSocialNetwork.database.ServiceUserDao;
+import org.hubson404.miniSocialNetwork.model.FollowInstance;
 import org.hubson404.miniSocialNetwork.model.Post;
 import org.hubson404.miniSocialNetwork.model.ServiceUser;
 
@@ -20,8 +21,9 @@ public class AppSession {
     private ServiceUser foundUser;
     private boolean isLoggedIn = false;
 
-    private final EntityDao<Post> peDao = new EntityDao<>();
-    private final ServiceUserDao suDao = new ServiceUserDao();
+    private final EntityDao<Post> pD = new EntityDao<>();
+    private final EntityDao<FollowInstance> fiD = new EntityDao<>();
+    private final ServiceUserDao suD = new ServiceUserDao();
 
     public void openSession(Scanner scanner) {
         String greeting = "Welcome to the MiniSocialNetwork.";
@@ -45,7 +47,7 @@ public class AppSession {
                     setLoggedIn(true);
                     break;
                 case "2":
-                    suDao.saveOrUpdate(SignInClient.createAccount(scanner));
+                    suD.saveOrUpdate(SignInClient.createAccount(scanner));
                     break;
                 default:
                     System.out.println("Command unknown.");
@@ -60,7 +62,7 @@ public class AppSession {
             switch (command) {
                 case "1":
                     Post post = PostingClient.writePost(scanner, loggedUser);
-                    peDao.saveOrUpdate(post);
+                    pD.saveOrUpdate(post);
                     break;
 
                 case "2":
@@ -69,9 +71,36 @@ public class AppSession {
                     Optional<ServiceUser> op;
 
                     userName = scanner.nextLine();
-                        op = suDao.findByUserName(ServiceUser.class, userName);
-                        op.ifPresent(this::setFoundUser);
-                        System.out.println(foundUser);
+                    op = suD.findByUserName(ServiceUser.class, userName);
+                    op.ifPresent(this::setFoundUser);
+                    if (op.isPresent()) {
+                        InteractionClient.showUserPage(foundUser, loggedUser);
+                    }
+                    while (foundUser != null) {
+                        System.out.println("Select command: \n1) SHOW ALL POSTS\n2) FOLLOW / UNFOLLOW USER\n3) GO BACK");
+                        command = scanner.nextLine();
+                        switch (command) {
+                            case "1":
+                                suD.getLatestPosts(foundUser).forEach(PostingClient::showPost);
+                                break;
+                            case "2":
+                                if (loggedUser.isFollowed(foundUser)) {
+                                    fiD.saveOrUpdate(loggedUser.unfollowUser(foundUser));
+                                    System.out.println("<" + foundUser.getUserName() + "> unfollowed <" + foundUser.getUserName() + ">");
+                                } else {
+                                    fiD.saveOrUpdate(loggedUser.followUser(foundUser));
+                                    System.out.println("<" + foundUser.getUserName() + "> is now followed...");
+                                }
+                                suD.saveOrUpdate(loggedUser);
+                                break;
+                            case "3":
+                                setFoundUser(null);
+                                break;
+                            default:
+                                System.out.println("Command unknown.");
+                                break;
+                        }
+                    }
                     break;
 
                 case "3":

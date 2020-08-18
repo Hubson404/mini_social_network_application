@@ -15,7 +15,7 @@ public class FollowInstance {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int followId;
+    private Long followId;
 
     @ManyToOne
     @EqualsAndHashCode.Exclude
