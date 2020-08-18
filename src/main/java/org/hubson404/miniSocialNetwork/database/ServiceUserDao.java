@@ -4,6 +4,7 @@ import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
+import org.hubson404.miniSocialNetwork.model.Post;
 import org.hubson404.miniSocialNetwork.model.ServiceUser;
 import org.hubson404.miniSocialNetwork.model.UserNameSearchable;
 
@@ -70,10 +71,32 @@ public class ServiceUserDao {
         } catch (HibernateException he) {
             he.printStackTrace();
         } catch (NoResultException e) {
-            System.out.println("User <"+ userName +"> not found.");
+            System.out.println("User <" + userName + "> not found.");
             return Optional.empty();
         }
         return Optional.empty();
+    }
+
+    public List<Post> getLatestPosts(ServiceUser serviceUser) {
+
+        List<Post> list = new ArrayList<>();
+        SessionFactory sessionFactory = HibernateUtil.getOurSessionFactory();
+
+        try (Session session = sessionFactory.openSession()) {
+
+            CriteriaBuilder cb = session.getCriteriaBuilder();
+            CriteriaQuery<Post> cq = cb.createQuery(Post.class);
+            Root<Post> root = cq.from(Post.class);
+            cq.select(root)
+                    .orderBy(cb.desc(root.get("createDate")))
+                    .where(cb.equal(root.get("originalPoster"), serviceUser.getUserId()));
+
+            list.addAll(session.createQuery(cq).list());
+            session.close();
+        } catch (HibernateException he) {
+            he.printStackTrace();
+        }
+        return list;
     }
 
     public void delete(ServiceUser serviceUser) {
