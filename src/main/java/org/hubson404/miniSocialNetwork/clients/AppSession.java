@@ -89,7 +89,7 @@ public class AppSession {
                                     System.out.println("<" + foundUser.getUserName() + "> unfollowed <" + foundUser.getUserName() + ">");
                                 } else {
                                     fiD.saveOrUpdate(loggedUser.followUser(foundUser));
-                                    System.out.println("<" + foundUser.getUserName() + "> is now followed...");
+                                    System.out.println("<" + foundUser.getUserName() + "> is now followed");
                                 }
                                 suD.saveOrUpdate(loggedUser);
                                 break;
