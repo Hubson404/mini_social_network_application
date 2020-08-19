@@ -13,14 +13,14 @@ public class CommentInstance {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private Long id;
 
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne
     @EqualsAndHashCode.Exclude
     @ToString.Exclude
     private Post commentPost;
 
-    @OneToOne(cascade = CascadeType.ALL)
+    @OneToOne
     @EqualsAndHashCode.Exclude
     @ToString.Exclude
     private Post mainPost;

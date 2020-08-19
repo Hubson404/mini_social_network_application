@@ -13,7 +13,7 @@ public class LikeBadge {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int likeId;
+    private Long likeId;
 
     private LocalDateTime createDate;
 

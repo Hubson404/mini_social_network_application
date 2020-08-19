@@ -63,9 +63,10 @@ public class Post {
         this.originalPoster = originalPoster;
     }
 
+    //todo: fix commenting on post
     public CommentInstance commentPost(Post comment) {
         CommentInstance ci = new CommentInstance(comment, this);
-        this.comments.add(ci);
+        this.getComments().add(ci);
         comment.setMainPost(ci);
         return ci;
     }

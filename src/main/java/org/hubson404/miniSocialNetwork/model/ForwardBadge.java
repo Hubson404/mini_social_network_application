@@ -14,7 +14,7 @@ public class ForwardBadge {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    int forwardId;
+    Long forwardId;
 
     @CreationTimestamp
     LocalDateTime createDate;

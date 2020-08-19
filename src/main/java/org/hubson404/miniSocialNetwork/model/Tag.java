@@ -13,13 +13,13 @@ public class Tag {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int tagId;
+    private Long tagId;
 
     private String tagName;
 
     @EqualsAndHashCode.Exclude
     @ToString.Exclude
-    @ManyToMany(mappedBy = "includedTags")
+    @ManyToMany(mappedBy = "includedTags",fetch = FetchType.EAGER)
     private Set<Post> taggedPosts;
 
     public Tag(String tagName) {
