@@ -1,6 +1,7 @@
 package org.hubson404.miniSocialNetwork.model;
 
 import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -15,6 +16,7 @@ public class LikeBadge {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long likeId;
 
+    @CreationTimestamp
     private LocalDateTime createDate;
 
     @ManyToOne
@@ -28,8 +30,8 @@ public class LikeBadge {
     private Post post;
 
     public LikeBadge(ServiceUser serviceUser, Post post) {
-        this.createDate = LocalDateTime.now();
         this.serviceUser = serviceUser;
         this.post = post;
     }
+
 }
