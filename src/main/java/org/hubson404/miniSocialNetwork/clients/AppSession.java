@@ -73,10 +73,9 @@ public class AppSession {
                     userName = scanner.nextLine();
                     op = suD.findByUserName(ServiceUser.class, userName);
                     op.ifPresent(this::setFoundUser);
-                    if (op.isPresent()) {
+
+                    while (foundUser != null && op.isPresent()) {
                         InteractionClient.showUserPage(foundUser, loggedUser);
-                    }
-                    while (foundUser != null) {
                         System.out.println("Select command: \n1) SHOW ALL POSTS\n2) FOLLOW / UNFOLLOW USER\n3) GO BACK");
                         command = scanner.nextLine();
                         switch (command) {
@@ -85,13 +84,14 @@ public class AppSession {
                                 break;
                             case "2":
                                 if (loggedUser.isFollowed(foundUser)) {
-                                    fiD.saveOrUpdate(loggedUser.unfollowUser(foundUser));
+                                    loggedUser.unfollowUser(foundUser);
                                     System.out.println("<" + foundUser.getUserName() + "> unfollowed <" + foundUser.getUserName() + ">");
                                 } else {
-                                    fiD.saveOrUpdate(loggedUser.followUser(foundUser));
+                                    loggedUser.followUser(foundUser);
                                     System.out.println("<" + foundUser.getUserName() + "> is now followed");
                                 }
                                 suD.saveOrUpdate(loggedUser);
+                                suD.saveOrUpdate(foundUser);
                                 break;
                             case "3":
                                 setFoundUser(null);

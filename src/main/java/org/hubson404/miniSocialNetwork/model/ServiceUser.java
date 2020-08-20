@@ -1,16 +1,14 @@
 package org.hubson404.miniSocialNetwork.model;
 
 import lombok.*;
-import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CreationTimestamp;
+import org.hubson404.miniSocialNetwork.database.EntityDao;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 @Data
 @NoArgsConstructor
@@ -37,27 +35,27 @@ public class ServiceUser implements UserNameSearchable {
     private boolean privateAccount;
     private boolean isDeleted;
 
-    @OneToMany(mappedBy = "originalPoster", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "originalPoster", fetch = FetchType.EAGER)
     @EqualsAndHashCode.Exclude
     @ToString.Exclude
     private Set<Post> posts;
 
-    @OneToMany(mappedBy = "serviceUser")
+    @OneToMany(mappedBy = "serviceUser", fetch = FetchType.EAGER)
     @EqualsAndHashCode.Exclude
     @ToString.Exclude
     private Set<LikeBadge> likeBadges;
 
-    @OneToMany(mappedBy = "serviceUser")
+    @OneToMany(mappedBy = "serviceUser", fetch = FetchType.EAGER)
     @EqualsAndHashCode.Exclude
     @ToString.Exclude
     private Set<ForwardBadge> forwardBadges;
 
-    @OneToMany(mappedBy = "mainUser", fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "mainUser", fetch = FetchType.EAGER, orphanRemoval = true)
     @EqualsAndHashCode.Exclude
     @ToString.Exclude
     private Set<FollowInstance> followedUsers;
 
-    @OneToMany(mappedBy = "followedUser", fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "followedUser", fetch = FetchType.EAGER)
     @EqualsAndHashCode.Exclude
     @ToString.Exclude
     private Set<FollowInstance> followers;
@@ -84,24 +82,22 @@ public class ServiceUser implements UserNameSearchable {
         this.posts.remove(p);
     }
 
-    public FollowInstance followUser(ServiceUser followedUser) {
+
+    public void followUser(ServiceUser followedUser) {
         FollowInstance fi = new FollowInstance(followedUser, this);
+        new EntityDao<FollowInstance>().saveOrUpdate(fi);
         this.followedUsers.add(fi);
         followedUser.getFollowers().add(fi);
-        return fi;
     }
 
-    public FollowInstance unfollowUser(ServiceUser followedUser) {
+    public void unfollowUser(ServiceUser followedUser) {
         Optional<FollowInstance> op = getFollowedUsers()
                 .stream()
                 .filter(fi -> fi.getFollowedUser().equals(followedUser))
                 .findFirst();
         FollowInstance fiBeingRemoved = op.get();
-        fiBeingRemoved.setFollowedUser(null);
-        fiBeingRemoved.setMainUser(null);
         this.followedUsers.remove(fiBeingRemoved);
         followedUser.getFollowers().remove(fiBeingRemoved);
-        return fiBeingRemoved;
     }
 
     public void showFollowedUsers() {
@@ -135,11 +131,11 @@ public class ServiceUser implements UserNameSearchable {
     }
 
     public boolean isFollowed(ServiceUser serviceUser) {
-        Set<ServiceUser> collect = this.getFollowedUsers()
+        boolean isFollowed = this.getFollowedUsers()
                 .stream()
                 .map(FollowInstance::getFollowedUser)
-                .collect(Collectors.toSet());
-        return collect.contains(serviceUser);
+                .anyMatch(user -> user.equals(serviceUser));
+        return isFollowed;
     }
 
 }
