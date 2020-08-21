@@ -66,6 +66,8 @@ public class AppSession {
                 case "1":
                     Post post = PostingClient.writePost(scanner, loggedUser);
                     pD.saveOrUpdate(post);
+                    new TagingClient().manageTags(post);
+                    pD.saveOrUpdate(post);
                     break;
 
                 case "2":
@@ -122,8 +124,13 @@ public class AppSession {
                         command = scanner.nextLine();
                         switch (command) {
                             case "1":
-                                //todo: implement forward post
-                                System.out.println("Commenting post");
+                                Post comment = PostingClient.writeComment(scanner,loggedUser);
+                                pD.saveOrUpdate(comment);
+                                new TagingClient().manageTags(comment);
+                                pD.saveOrUpdate(comment);
+                                foundPost.commentPost(comment,foundPost);
+                                pD.saveOrUpdate(foundPost);
+                                suD.saveOrUpdate(loggedUser);
                                 break;
                             case "2":
                                 if (foundPost.isLiked(loggedUser)) {

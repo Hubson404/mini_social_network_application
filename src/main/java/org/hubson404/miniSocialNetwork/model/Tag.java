@@ -3,6 +3,7 @@ package org.hubson404.miniSocialNetwork.model;
 import lombok.*;
 
 import javax.persistence.*;
+import java.util.HashSet;
 import java.util.Set;
 
 @Data
@@ -15,12 +16,13 @@ public class Tag {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long tagId;
 
+    @Column(nullable = false)
     private String tagName;
 
     @EqualsAndHashCode.Exclude
     @ToString.Exclude
-    @ManyToMany(mappedBy = "includedTags",fetch = FetchType.EAGER)
-    private Set<Post> taggedPosts;
+    @ManyToMany(fetch = FetchType.EAGER)
+    private Set<Post> taggedPosts = new HashSet<>();
 
     public Tag(String tagName) {
         this.tagName = tagName;

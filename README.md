@@ -1,4 +1,4 @@
-#MINI SOCIAL NETWORK
+# MINI SOCIAL NETWORK
 This application is a model of social network service.
 It allows its users to post short messages on their boards. 
 Users are able to comment on, like and forward messages posted by other users. 

@@ -6,6 +6,7 @@ import org.hubson404.miniSocialNetwork.database.EntityDao;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
 
@@ -36,13 +37,15 @@ public class Post {
     @ToString.Exclude
     private Set<LikeBadge> likeBadges;
 
-    @OneToMany(mappedBy = "post", fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "post", fetch = FetchType.EAGER, orphanRemoval = true)
     @EqualsAndHashCode.Exclude
     @ToString.Exclude
     private Set<ForwardBadge> forwardBadges;
 
-    @ManyToMany
-    private Set<Tag> includedTags;
+    @ManyToMany(mappedBy = "taggedPosts",fetch = FetchType.EAGER)
+    @EqualsAndHashCode.Exclude
+    @ToString.Exclude
+    private Set<Tag> includedTags = new HashSet<>();
 
     @OneToMany(mappedBy = "commentPost", fetch = FetchType.EAGER)
     @EqualsAndHashCode.Exclude
@@ -54,9 +57,6 @@ public class Post {
     @ToString.Exclude
     private CommentInstance mainPost;
 
-//    private int forwardedPostId;
-//    private String forwardedPostContent;
-
     public Post(String content, PostType postType, ServiceUser originalPoster) {
         this.content = content;
         this.isEdited = false;
@@ -65,11 +65,11 @@ public class Post {
     }
 
     //todo: fix commenting on post
-    public CommentInstance commentPost(Post comment) {
-        CommentInstance ci = new CommentInstance(comment, this);
-        this.getComments().add(ci);
+    public void commentPost(Post comment, Post mainPost) {
+        CommentInstance ci = new CommentInstance(comment, mainPost);
+        new EntityDao<CommentInstance>().saveOrUpdate(ci);
+        mainPost.getComments().add(ci);
         comment.setMainPost(ci);
-        return ci;
     }
 
     public void addLikeBadge(ServiceUser serviceUser) {
