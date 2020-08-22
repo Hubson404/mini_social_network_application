@@ -42,30 +42,17 @@ public class PostDao {
         return Optional.empty();
     }
 
-//    public <T extends PostNameSearchable> Optional<T> findByUserName(Class<T> classType, String postName) {
-//
-//        SessionFactory sessionFactory = HibernateUtil.getOurSessionFactory();
-//        try (Session session = sessionFactory.openSession()) {
-//
-//            CriteriaBuilder cb = session.getCriteriaBuilder();
-//
-//            CriteriaQuery<T> criteriaQuery = cb.createQuery(classType);
-//
-//            Root<T> rootTable = criteriaQuery.from(classType);
-//
-//            criteriaQuery.select(rootTable)
-//                    .where(
-//                            cb.equal(rootTable.get("postName"), postName.toLowerCase())
-//                    );
-//            return Optional.ofNullable(session.createQuery(criteriaQuery).getSingleResult());
-//        } catch (HibernateException he) {
-//            he.printStackTrace();
-//        } catch (NoResultException e) {
-//            System.out.println("User <" + postName + "> not found.");
-//            return Optional.empty();
-//        }
-//        return Optional.empty();
-//    }
+    public List<Post> findPostByTag(String tagName) {
+        List<Post> list = new ArrayList<>();
+
+        Tag tag = new TagDao().findByTagName(tagName).get();
+
+        List<Post> all = findAll();
+
+        all.stream().filter(post -> post.getIncludedTags().contains(tag)).forEach(list::add);
+
+        return list;
+    }
 
     public void delete(Post post) {
         SessionFactory sessionFactory = HibernateUtil.getOurSessionFactory();
@@ -85,7 +72,7 @@ public class PostDao {
         }
     }
 
-    public List<Post> findAll(Class<Post> classType) {
+    public List<Post> findAll() {
         List<Post> list = new ArrayList<>();
 
         SessionFactory sessionFactory = HibernateUtil.getOurSessionFactory();
@@ -95,11 +82,11 @@ public class PostDao {
             CriteriaBuilder cb = session.getCriteriaBuilder();
 
             // obiekt reprezentujący zapytanie
-            CriteriaQuery<Post> criteriaQuery = cb.createQuery(classType);
+            CriteriaQuery<Post> criteriaQuery = cb.createQuery(Post.class);
 
             // obiekt reprezentujący tabelę bazodanową.
             // do jakiej tabeli kierujemy nasze zapytanie?
-            Root<Post> rootTable = criteriaQuery.from(classType);
+            Root<Post> rootTable = criteriaQuery.from(Post.class);
 
             // wykonanie zapytania
             criteriaQuery.select(rootTable);

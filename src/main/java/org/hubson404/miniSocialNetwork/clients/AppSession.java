@@ -64,7 +64,8 @@ public class AppSession {
                     "\n1) CREATE POST" +
                     "\n2) FIND USER BY USER_NAME" +
                     "\n3) FIND POST BY POST_ID" +
-                    "\n4) LOG OUT");
+                    "\n4) FIND POSTS BY TAG_NAME" +
+                    "\n5) LOG OUT");
             command = scanner.nextLine();
 
             switch (command) {
@@ -96,7 +97,7 @@ public class AppSession {
                                 suD.getLatestPosts(foundUser).forEach(PostingClient::showPost);
                                 break;
                             case "2":
-                                if (loggedUser.equals(foundUser)){
+                                if (loggedUser.equals(foundUser)) {
                                     System.err.println("You can't follow yourself.");
 
                                 } else if (suD.isFollowedByUser(loggedUser, foundUser)) {
@@ -143,7 +144,7 @@ public class AppSession {
                                 pD.saveOrUpdate(comment);
                                 new TaggingClient().manageTags(comment);
 //                                pD.saveOrUpdate(comment);
-                                pD.commentPost(comment,foundPost);
+                                pD.commentPost(comment, foundPost);
                                 break;
                             case "2":
                                 if (pD.isLiked(loggedUser, foundPost)) {
@@ -170,6 +171,11 @@ public class AppSession {
                     }
                     break;
                 case "4":
+                    System.out.println("Insert searched tagName: ");
+                    String tagName = scanner.nextLine();
+                    pD.findPostByTag(tagName).forEach(PostingClient::showPost);
+                    break;
+                case "5":
                     System.out.println("Logging out. See you soon!");
                     loggedUser = null;
                     isLoggedIn = false;
