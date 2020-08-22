@@ -13,6 +13,7 @@ public class LoggingInClient {
 
     public Optional<ServiceUser> logIn(Scanner scanner) {
 
+        // TODO: zapytanie do bazy o uzytkownika z takim loginem i haslem
         loginIdMap = serviceUserEntityDao.findAll(ServiceUser.class)
                 .stream().collect(Collectors.toMap(ServiceUser::getLogin, ServiceUser::getUserId));
 

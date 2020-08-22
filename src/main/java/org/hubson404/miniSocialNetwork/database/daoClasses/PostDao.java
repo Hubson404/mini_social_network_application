@@ -115,8 +115,8 @@ public class PostDao {
 
             LikeBadge lb = new LikeBadge(loggedUser, post);
             session.saveOrUpdate(lb);
-            post.getLikeBadges().add(lb);
-            loggedUser.getLikeBadges().add(lb);
+//            post.getLikeBadges().add(lb);
+//            loggedUser.getLikeBadges().add(lb); // todo: przetestuj sobie
 
             session.saveOrUpdate(loggedUser);
             session.saveOrUpdate(post);
@@ -136,13 +136,18 @@ public class PostDao {
         try (Session session = sessionFactory.openSession()) {
             transaction = session.beginTransaction();
 
+            // TODO: zapytanie find - szukanie po encjach
             Optional<LikeBadge> op = post.getLikeBadges()
                     .stream()
                     .filter(fi -> fi.getServiceUser().equals(loggedUser))
                     .findFirst();
             LikeBadge lbBeingRemoved = op.get();
+
+            // jak znajdziesz likebadge
+            // to ten kod zostaje
             post.getLikeBadges().remove(lbBeingRemoved);
             loggedUser.getLikeBadges().remove(lbBeingRemoved);
+            session.saveOrUpdate(lbBeingRemoved);
 
             session.saveOrUpdate(loggedUser);
             session.saveOrUpdate(post);
@@ -170,14 +175,11 @@ public class PostDao {
         try (Session session = sessionFactory.openSession()) {
             transaction = session.beginTransaction();
 
-            CommentInstance ci = new CommentInstance(commentPost, mainPost);
-            session.saveOrUpdate(ci);
-
-            commentPost.setMainPost(ci);
-            mainPost.getComments().add(ci);
-
-            session.saveOrUpdate(mainPost);
+            commentPost.setMainPost(mainPost);
             session.saveOrUpdate(commentPost);
+
+            mainPost.getComments().add(commentPost);
+            session.saveOrUpdate(mainPost);
 
             transaction.commit();
         } catch (HibernateException he) {

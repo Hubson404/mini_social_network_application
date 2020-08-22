@@ -46,15 +46,15 @@ public class Post {
     @ToString.Exclude
     private Set<Tag> includedTags = new HashSet<>();
 
-    @OneToMany(mappedBy = "commentPost", fetch = FetchType.EAGER)
+    @OneToMany(fetch = FetchType.EAGER)
     @EqualsAndHashCode.Exclude
     @ToString.Exclude
-    private Set<CommentInstance> comments;
+    private Set<Post> comments;
 
-    @OneToOne(mappedBy = "mainPost", fetch = FetchType.EAGER)
+    @ManyToOne
     @EqualsAndHashCode.Exclude
     @ToString.Exclude
-    private CommentInstance mainPost;
+    private Post mainPost;
 
     public Post(String content, PostType postType, ServiceUser originalPoster) {
         this.content = content;
