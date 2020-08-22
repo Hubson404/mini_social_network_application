@@ -10,7 +10,8 @@ import java.util.Set;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-public class Tag {
+@Table(uniqueConstraints = @UniqueConstraint(columnNames = "tagName"))
+public class Tag implements TagNameSearchable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -19,9 +20,13 @@ public class Tag {
     @Column(nullable = false)
     private String tagName;
 
+
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(name = "post_tag",
+            joinColumns = {@JoinColumn(name = "fk_tag")},
+            inverseJoinColumns = {@JoinColumn(name = "fk_post")})
     @EqualsAndHashCode.Exclude
     @ToString.Exclude
-    @ManyToMany(fetch = FetchType.EAGER)
     private Set<Post> taggedPosts = new HashSet<>();
 
     public Tag(String tagName) {
