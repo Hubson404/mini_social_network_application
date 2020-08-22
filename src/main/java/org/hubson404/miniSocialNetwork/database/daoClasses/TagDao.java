@@ -7,6 +7,7 @@ import org.hibernate.Transaction;
 import org.hubson404.miniSocialNetwork.database.HibernateUtil;
 import org.hubson404.miniSocialNetwork.model.*;
 import org.hubson404.miniSocialNetwork.model.utils.TagNameSearchable;
+import org.hubson404.miniSocialNetwork.model.utils.UserNameSearchable;
 
 import javax.persistence.NoResultException;
 import javax.persistence.criteria.CriteriaBuilder;
@@ -44,31 +45,6 @@ public class TagDao {
         return Optional.empty();
     }
 
-    public <T extends TagNameSearchable> Optional<T> findByUserName(Class<T> classType, String tagName) {
-
-        SessionFactory sessionFactory = HibernateUtil.getOurSessionFactory();
-        try (Session session = sessionFactory.openSession()) {
-
-            CriteriaBuilder cb = session.getCriteriaBuilder();
-
-            CriteriaQuery<T> criteriaQuery = cb.createQuery(classType);
-
-            Root<T> rootTable = criteriaQuery.from(classType);
-
-            criteriaQuery.select(rootTable)
-                    .where(
-                            cb.equal(rootTable.get("tagName"), tagName.toLowerCase())
-                    );
-            return Optional.ofNullable(session.createQuery(criteriaQuery).getSingleResult());
-        } catch (HibernateException he) {
-            he.printStackTrace();
-        } catch (NoResultException e) {
-            System.out.println("User <" + tagName + "> not found.");
-            return Optional.empty();
-        }
-        return Optional.empty();
-    }
-
     public void delete(Tag tag) {
         SessionFactory sessionFactory = HibernateUtil.getOurSessionFactory();
         Transaction transaction = null;
@@ -85,6 +61,30 @@ public class TagDao {
                 transaction.rollback();
             }
         }
+    }
+
+    public Optional<Tag> findByTagName(String tagName) {
+
+        SessionFactory sessionFactory = HibernateUtil.getOurSessionFactory();
+        try (Session session = sessionFactory.openSession()) {
+
+            CriteriaBuilder cb = session.getCriteriaBuilder();
+
+            CriteriaQuery<Tag> criteriaQuery = cb.createQuery(Tag.class);
+
+            Root<Tag> rootTable = criteriaQuery.from(Tag.class);
+
+            criteriaQuery.select(rootTable)
+                    .where(
+                            cb.equal(rootTable.get("tagName"), tagName.toLowerCase())
+                    );
+            return Optional.ofNullable(session.createQuery(criteriaQuery).getSingleResult());
+        } catch (HibernateException he) {
+            he.printStackTrace();
+        } catch (NoResultException e) {
+            System.err.println("User <" + tagName + "> not found.");
+        }
+        return Optional.empty();
     }
 
     public List<Tag> findAll(Class<Tag> classType) {
@@ -117,6 +117,7 @@ public class TagDao {
         }
         return list;
     }
+
     public void addTag(Tag tag, Post post) {
         SessionFactory sessionFactory = HibernateUtil.getOurSessionFactory();
         Transaction transaction = null;
@@ -124,8 +125,8 @@ public class TagDao {
         try (Session session = sessionFactory.openSession()) {
             transaction = session.beginTransaction();
 
-                post.getIncludedTags().add(tag);
-                tag.getTaggedPosts().add(post);
+            post.getIncludedTags().add(tag);
+            tag.getTaggedPosts().add(post);
 
             session.saveOrUpdate(tag);
             session.saveOrUpdate(post);
