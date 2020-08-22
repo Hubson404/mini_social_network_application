@@ -9,7 +9,7 @@ import java.util.Scanner;
 
 public class PostingClient {
 
-    public static Post writePost(Scanner scanner, ServiceUser user) {
+    public  Post writePost(Scanner scanner, ServiceUser user) {
 
         String postContent;
 
@@ -24,7 +24,7 @@ public class PostingClient {
         return post;
     }
 
-    public static Post writeComment(Scanner scanner, ServiceUser user) {
+    public  Post writeComment(Scanner scanner, ServiceUser user) {
 
         String postContent;
 
@@ -39,7 +39,7 @@ public class PostingClient {
         return post;
     }
 
-    public static void showPost(Post post) {
+    public  void showPost(Post post) {
 
 //        ServiceUser op = post.getOriginalPoster();
 //        System.out.println(op.getAvatar() + " <" + op.getUserName() + "> :");

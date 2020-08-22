@@ -28,6 +28,7 @@ public class AppSession {
     private final EntityDao<FollowInstance> fiD = new EntityDao<>();
     private final EntityDao<LikeBadge> lbD = new EntityDao<>();
     private final ServiceUserDao suD = new ServiceUserDao();
+    private final PostingClient postingClient = new PostingClient();
 
     public void openSession(Scanner scanner) {
         String greeting = "Welcome to the MiniSocialNetwork.";
@@ -70,7 +71,7 @@ public class AppSession {
 
             switch (command) {
                 case "1":
-                    Post post = PostingClient.writePost(scanner, loggedUser);
+                    Post post = postingClient.writePost(scanner, loggedUser);
                     pD.saveOrUpdate(post);
                     break;
 
@@ -92,7 +93,7 @@ public class AppSession {
                         command = scanner.nextLine();
                         switch (command) {
                             case "1":
-                                suD.getLatestPosts(foundUser).forEach(PostingClient::showPost);
+                                suD.getLatestPosts(foundUser).forEach(postingClient::showPost);
                                 break;
                             case "2":
                                 if (loggedUser.equals(foundUser)) {
@@ -128,7 +129,7 @@ public class AppSession {
                     opPost.ifPresent(this::setFoundPost);
 
                     while (opPost.isPresent() && foundPost != null) {
-                        PostingClient.showPost(foundPost);
+                        postingClient.showPost(foundPost);
                         System.out.println("Select command: " +
                                 "\n1) COMMENT POST" +
                                 "\n2) LIKE / UN-LIKE POST" +
@@ -138,7 +139,7 @@ public class AppSession {
                         command = scanner.nextLine();
                         switch (command) {
                             case "1":
-                                Post comment = PostingClient.writeComment(scanner, loggedUser);
+                                Post comment = postingClient.writeComment(scanner, loggedUser);
                                 pD.saveOrUpdate(comment);
                                 pD.commentPost(comment, foundPost);
                                 break;
@@ -169,7 +170,7 @@ public class AppSession {
                 case "4":
                     System.out.println("Insert searched tagName: ");
                     String tagName = scanner.nextLine();
-                    pD.findPostByTag(tagName).forEach(PostingClient::showPost);
+                    pD.findPostByTag(tagName).forEach(postingClient::showPost);
                     break;
                 case "5":
                     System.out.println("Logging out. See you soon!");
