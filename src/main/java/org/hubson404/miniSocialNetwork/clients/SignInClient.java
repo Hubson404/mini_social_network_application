@@ -1,6 +1,6 @@
 package org.hubson404.miniSocialNetwork.clients;
 
-import org.hubson404.miniSocialNetwork.database.EntityDao;
+import org.hubson404.miniSocialNetwork.daoClasses.EntityDao;
 import org.hubson404.miniSocialNetwork.model.ServiceUser;
 
 import java.util.*;
