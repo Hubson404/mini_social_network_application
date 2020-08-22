@@ -81,18 +81,25 @@ public class AppSession {
 
                     while (foundUser != null && op.isPresent()) {
                         InteractionClient.showUserPage(foundUser, loggedUser);
-                        System.out.println("Select command: \n1) SHOW ALL POSTS\n2) FOLLOW / UNFOLLOW USER\n3) GO BACK");
+                        System.out.println("Select command: " +
+                                "\n1) SHOW ALL POSTS" +
+                                "\n2) FOLLOW / UNFOLLOW USER" +
+                                "\n3) GO BACK");
                         command = scanner.nextLine();
                         switch (command) {
                             case "1":
                                 suD.getLatestPosts(foundUser).forEach(PostingClient::showPost);
                                 break;
                             case "2":
-                                if (loggedUser.isFollowed(foundUser)) {
-                                    loggedUser.unfollowUser(foundUser);
-                                    System.out.println("<" + foundUser.getUserName() + "> unfollowed <" + foundUser.getUserName() + ">");
+                                if (loggedUser.equals(foundUser)){
+                                    System.err.println("You can't follow yourself.");
+
+                                } else if (suD.isFollowedByUser(loggedUser, foundUser)) {
+                                    suD.unFollowUser(loggedUser, foundUser);
+                                    System.out.println("<" + foundUser.getUserName()
+                                            + "> unfollowed <" + foundUser.getUserName() + ">");
                                 } else {
-                                    loggedUser.followUser(foundUser);
+                                    suD.followUser(loggedUser, foundUser);
                                     System.out.println("<" + foundUser.getUserName() + "> is now followed");
                                 }
                                 suD.saveOrUpdate(loggedUser);

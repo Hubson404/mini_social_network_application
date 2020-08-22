@@ -1,12 +1,13 @@
 package org.hubson404.miniSocialNetwork.clients;
 
-import org.hubson404.miniSocialNetwork.database.ServiceUserDao;
+import org.hubson404.miniSocialNetwork.daoClasses.ServiceUserDao;
 import org.hubson404.miniSocialNetwork.model.Post;
 import org.hubson404.miniSocialNetwork.model.ServiceUser;
 
 import java.util.List;
 
 public class InteractionClient {
+
 
     public static void showUserPage(ServiceUser searchedUser, ServiceUser loggedUser) {
 
@@ -21,7 +22,7 @@ public class InteractionClient {
         String relation = "[FOLLOW THIS USER]";
         if (loggedUser.equals(searchedUser)) {
             relation = "[YOUR ACCOUNT]";
-        } else if (loggedUser.isFollowed(searchedUser)) {
+        } else if (sud.isFollowedByUser(loggedUser, searchedUser)) {
             relation = "[FOLLOWING]";
         }
 
