@@ -72,8 +72,6 @@ public class AppSession {
                 case "1":
                     Post post = PostingClient.writePost(scanner, loggedUser);
                     pD.saveOrUpdate(post);
-                    new TaggingClient().manageTags(post);
-                    pD.saveOrUpdate(post);
                     break;
 
                 case "2":
@@ -142,8 +140,6 @@ public class AppSession {
                             case "1":
                                 Post comment = PostingClient.writeComment(scanner, loggedUser);
                                 pD.saveOrUpdate(comment);
-                                new TaggingClient().manageTags(comment);
-//                                pD.saveOrUpdate(comment);
                                 pD.commentPost(comment, foundPost);
                                 break;
                             case "2":

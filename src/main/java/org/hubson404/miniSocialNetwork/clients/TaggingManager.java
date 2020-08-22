@@ -8,12 +8,9 @@ import org.hubson404.miniSocialNetwork.model.Tag;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class TaggingClient {
-
-    private Map<String, Long> tagIdNameMap = new HashMap<>();
-
-
+public class TaggingManager {
     public void manageTags(Post post) {
+        Map<String, Long> tagIdNameMap = new HashMap<>();
 
         TagDao tD = new TagDao();
         EntityDao<Post> pD = new EntityDao<>();
@@ -62,7 +59,7 @@ public class TaggingClient {
         List<String> wordList = Arrays.asList(loremIpsumArray)
                 .stream()
                 .filter(s -> s.length() > 0)
-                .map(s -> s.toLowerCase())
+                .map(String::toLowerCase)
                 .collect(Collectors.toList());
 
         return wordList;

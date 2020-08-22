@@ -4,6 +4,7 @@ import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
+import org.hubson404.miniSocialNetwork.clients.TaggingManager;
 import org.hubson404.miniSocialNetwork.database.HibernateUtil;
 import org.hubson404.miniSocialNetwork.model.*;
 
@@ -21,6 +22,8 @@ public class PostDao {
 
         try (Session session = sessionFactory.openSession()) {
             transaction = session.beginTransaction();
+            session.saveOrUpdate(post);
+            new TaggingManager().manageTags(post);
             session.saveOrUpdate(post);
 
             transaction.commit();
@@ -153,7 +156,6 @@ public class PostDao {
     }
 
     public boolean isLiked(ServiceUser loggedUser, Post post) {
-
         boolean isPresent = post.getLikeBadges()
                 .stream()
                 .map(LikeBadge::getServiceUser)
