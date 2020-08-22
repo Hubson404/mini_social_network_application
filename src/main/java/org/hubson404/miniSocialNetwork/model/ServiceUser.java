@@ -2,6 +2,9 @@ package org.hubson404.miniSocialNetwork.model;
 
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
+import org.hubson404.miniSocialNetwork.model.utils.AccountStatus;
+import org.hubson404.miniSocialNetwork.model.utils.UserNameSearchable;
+
 import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.Set;

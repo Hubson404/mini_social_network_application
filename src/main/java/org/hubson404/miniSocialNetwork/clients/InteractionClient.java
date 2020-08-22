@@ -1,6 +1,6 @@
 package org.hubson404.miniSocialNetwork.clients;
 
-import org.hubson404.miniSocialNetwork.daoClasses.ServiceUserDao;
+import org.hubson404.miniSocialNetwork.database.daoClasses.ServiceUserDao;
 import org.hubson404.miniSocialNetwork.model.Post;
 import org.hubson404.miniSocialNetwork.model.ServiceUser;
 

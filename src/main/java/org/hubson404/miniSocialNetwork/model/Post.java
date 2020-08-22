@@ -2,6 +2,8 @@ package org.hubson404.miniSocialNetwork.model;
 
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
+import org.hubson404.miniSocialNetwork.model.utils.PostType;
+
 import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.HashSet;

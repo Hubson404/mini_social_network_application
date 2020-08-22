@@ -1,4 +1,4 @@
-package org.hubson404.miniSocialNetwork.daoClasses;
+package org.hubson404.miniSocialNetwork.database.daoClasses;
 
 import org.hibernate.HibernateException;
 import org.hibernate.Session;

@@ -1,7 +1,7 @@
 package org.hubson404.miniSocialNetwork.clients;
 
-import org.hubson404.miniSocialNetwork.daoClasses.EntityDao;
-import org.hubson404.miniSocialNetwork.daoClasses.TagDao;
+import org.hubson404.miniSocialNetwork.database.daoClasses.EntityDao;
+import org.hubson404.miniSocialNetwork.database.daoClasses.TagDao;
 import org.hubson404.miniSocialNetwork.model.Post;
 import org.hubson404.miniSocialNetwork.model.Tag;
 

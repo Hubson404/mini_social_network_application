@@ -1,6 +1,7 @@
 package org.hubson404.miniSocialNetwork.model;
 
 import lombok.*;
+import org.hubson404.miniSocialNetwork.model.utils.TagNameSearchable;
 
 import javax.persistence.*;
 import java.util.HashSet;

@@ -1,4 +1,4 @@
-package org.hubson404.miniSocialNetwork.daoClasses;
+package org.hubson404.miniSocialNetwork.database.daoClasses;
 
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
@@ -8,7 +8,7 @@ import org.hubson404.miniSocialNetwork.database.HibernateUtil;
 import org.hubson404.miniSocialNetwork.model.FollowInstance;
 import org.hubson404.miniSocialNetwork.model.Post;
 import org.hubson404.miniSocialNetwork.model.ServiceUser;
-import org.hubson404.miniSocialNetwork.model.UserNameSearchable;
+import org.hubson404.miniSocialNetwork.model.utils.UserNameSearchable;
 
 import javax.persistence.NoResultException;
 import javax.persistence.criteria.CriteriaBuilder;

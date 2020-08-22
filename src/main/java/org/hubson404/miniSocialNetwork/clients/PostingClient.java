@@ -1,10 +1,9 @@
 package org.hubson404.miniSocialNetwork.clients;
 
 import org.hubson404.miniSocialNetwork.model.Post;
-import org.hubson404.miniSocialNetwork.model.PostType;
+import org.hubson404.miniSocialNetwork.model.utils.PostType;
 import org.hubson404.miniSocialNetwork.model.ServiceUser;
 
-import java.sql.SQLOutput;
 import java.time.format.DateTimeFormatter;
 import java.util.Scanner;
 
