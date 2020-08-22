@@ -1,9 +1,10 @@
-package org.hubson404.miniSocialNetwork.database;
+package org.hubson404.miniSocialNetwork.daoClasses;
 
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
+import org.hubson404.miniSocialNetwork.database.HibernateUtil;
 
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;

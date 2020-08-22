@@ -2,12 +2,9 @@ package org.hubson404.miniSocialNetwork.model;
 
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
-import org.hubson404.miniSocialNetwork.database.EntityDao;
-
 import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.HashSet;
-import java.util.Optional;
 import java.util.Set;
 
 @Data
@@ -63,58 +60,4 @@ public class Post {
         this.postType = postType;
         this.originalPoster = originalPoster;
     }
-
-    //todo: fix commenting on post
-    public void commentPost(Post comment, Post mainPost) {
-        CommentInstance ci = new CommentInstance(comment, mainPost);
-        new EntityDao<CommentInstance>().saveOrUpdate(ci);
-        mainPost.getComments().add(ci);
-        comment.setMainPost(ci);
-    }
-
-    public void addLikeBadge(ServiceUser serviceUser) {
-        LikeBadge lb = new LikeBadge(serviceUser, this);
-        new EntityDao<LikeBadge>().saveOrUpdate(lb);
-        this.likeBadges.add(lb);
-        serviceUser.getLikeBadges().add(lb);
-    }
-
-    public void removeLikeBadge(ServiceUser serviceUser) {
-        Optional<LikeBadge> op = getLikeBadges()
-                .stream()
-                .filter(fi -> fi.getServiceUser().equals(serviceUser))
-                .findFirst();
-        LikeBadge lbBeingRemoved = op.get();
-        this.likeBadges.remove(lbBeingRemoved);
-        serviceUser.getLikeBadges().remove(lbBeingRemoved);
-    }
-
-    public void addForwardBadge(ForwardBadge b) {
-        this.forwardBadges.add(b);
-        b.setPost(this);
-    }
-
-    public void removeForwardBadge(ForwardBadge b) {
-        this.forwardBadges.remove(b);
-    }
-
-    public void addTag(Tag t) {
-        this.includedTags.add(t);
-        t.getTaggedPosts().add(this);
-    }
-
-    public void removeTag(Tag t) {
-        this.includedTags.remove(t);
-        t.getTaggedPosts().remove(this);
-    }
-
-    public boolean isLiked(ServiceUser serviceUser) {
-        boolean isPresent = this.getLikeBadges()
-                .stream()
-                .map(LikeBadge::getServiceUser)
-                .anyMatch(u -> u.equals(serviceUser));
-        return isPresent;
-    }
-
-
 }
