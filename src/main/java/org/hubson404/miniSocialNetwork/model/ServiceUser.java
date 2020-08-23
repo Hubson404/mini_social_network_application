@@ -4,7 +4,6 @@ import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hubson404.miniSocialNetwork.model.utils.AccountStatus;
 import org.hubson404.miniSocialNetwork.model.utils.UserNameSearchable;
-
 import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.Set;
@@ -34,27 +33,33 @@ public class ServiceUser implements UserNameSearchable {
     private boolean privateAccount;
     private boolean isDeleted;
 
-    @OneToMany(mappedBy = "originalPoster", fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "originalPoster",
+            fetch = FetchType.EAGER)
     @EqualsAndHashCode.Exclude
     @ToString.Exclude
     private Set<Post> posts;
 
-    @OneToMany(mappedBy = "serviceUser", fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "serviceUser",
+            fetch = FetchType.EAGER)
     @EqualsAndHashCode.Exclude
     @ToString.Exclude
     private Set<LikeBadge> likeBadges;
 
-    @OneToMany(mappedBy = "serviceUser", fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "serviceUser",
+            fetch = FetchType.EAGER)
     @EqualsAndHashCode.Exclude
     @ToString.Exclude
     private Set<ForwardBadge> forwardBadges;
 
-    @OneToMany(mappedBy = "mainUser", fetch = FetchType.EAGER, orphanRemoval = true)
+    @OneToMany(mappedBy = "mainUser",
+            fetch = FetchType.EAGER,
+            orphanRemoval = true)
     @EqualsAndHashCode.Exclude
     @ToString.Exclude
     private Set<FollowInstance> followedUsers;
 
-    @OneToMany(mappedBy = "followedUser", fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "followedUser",
+            fetch = FetchType.EAGER)
     @EqualsAndHashCode.Exclude
     @ToString.Exclude
     private Set<FollowInstance> followers;
