@@ -132,7 +132,8 @@ public class AppSession {
                                 "\n1) COMMENT POST" +
                                 "\n2) LIKE / UN-LIKE POST" +
                                 "\n3) FORWARD POST" +
-                                "\n4) GO BACK");
+                                "\n4) SHOW ALL COMMENTS" +
+                                "\n5) GO BACK");
 
                         command = scanner.nextLine();
                         switch (command) {
@@ -159,6 +160,12 @@ public class AppSession {
                                 System.out.println("Forwarding post");
                                 break;
                             case "4":
+                                pD.showAllComments(foundPost);
+                                System.out.println();
+                                System.out.println("############ END OF COMMENTS ############");
+                                System.out.println();
+                                break;
+                            case "5":
                                 setFoundPost(null);
                                 break;
                             default:
