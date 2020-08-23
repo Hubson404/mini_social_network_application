@@ -7,7 +7,7 @@ import java.util.*;
 
 public class SignInClient {
 
-    private static EntityDao<ServiceUser> serviceUserEntityDao = new EntityDao<>();
+    private static final EntityDao<ServiceUser> serviceUserEntityDao = new EntityDao<>();
 
     public static ServiceUser createAccount(Scanner scanner) {
 
@@ -91,7 +91,7 @@ public class SignInClient {
 
             if (password.length() < 5) {
                 System.out.println("Given password is too short (min.5 - max.20 characters).");
-            } else if (password.length() > 20) {
+            } else {
                 System.out.println("Given password is too long (min.5 - max.20 characters).");
             }
             System.out.println(" Select different password: ");

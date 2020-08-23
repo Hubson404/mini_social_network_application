@@ -15,10 +15,7 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
 public class ServiceUserDao {
     public void saveOrUpdate(ServiceUser serviceUser) {
@@ -76,6 +73,31 @@ public class ServiceUserDao {
             he.printStackTrace();
         } catch (NoResultException e) {
             System.out.println("User <" + userName + "> not found.");
+            return Optional.empty();
+        }
+        return Optional.empty();
+    }
+
+    public Optional<ServiceUser> findByUserLogin(String login) {
+
+        SessionFactory sessionFactory = HibernateUtil.getOurSessionFactory();
+        try (Session session = sessionFactory.openSession()) {
+
+            CriteriaBuilder cb = session.getCriteriaBuilder();
+
+            CriteriaQuery<ServiceUser> criteriaQuery = cb.createQuery(ServiceUser.class);
+
+            Root<ServiceUser> rootTable = criteriaQuery.from(ServiceUser.class);
+
+            criteriaQuery.select(rootTable)
+                    .where(
+                            cb.equal(rootTable.get("login"), login.toLowerCase())
+                    );
+            return Optional.ofNullable(session.createQuery(criteriaQuery).getSingleResult());
+        } catch (HibernateException he) {
+            he.printStackTrace();
+        } catch (NoResultException e) {
+            System.out.println("User <" + login + "> not found.");
             return Optional.empty();
         }
         return Optional.empty();
@@ -295,6 +317,26 @@ public class ServiceUserDao {
             System.out.print("~");
         }
         System.out.println();
+    }
+
+    public Optional<ServiceUser> logIn(Scanner scanner) {
+
+        String login;
+        String inputPassword;
+
+        System.out.println("Input your login: ");
+        login = scanner.nextLine();
+        System.out.println("Input your password: ");
+        inputPassword = scanner.nextLine();
+
+        Optional<ServiceUser> op = this.findByUserLogin(login);
+
+        if (op.isPresent() && op.get().getPassword().equals(inputPassword)) {
+            return op;
+        } else {
+            System.err.println("Wrong login or password.");
+        }
+        return Optional.empty();
     }
 
 }
