@@ -3,6 +3,7 @@ package org.hubson404.miniSocialNetwork.clients;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.tool.hbm2ddl.SchemaUpdateTask;
 import org.hubson404.miniSocialNetwork.database.daoClasses.*;
 import org.hubson404.miniSocialNetwork.model.*;
 import org.hubson404.miniSocialNetwork.model.LikeBadge;
@@ -10,6 +11,7 @@ import org.hubson404.miniSocialNetwork.model.Post;
 import org.hubson404.miniSocialNetwork.model.ServiceUser;
 import org.hubson404.miniSocialNetwork.model.utils.PostType;
 
+import java.sql.SQLOutput;
 import java.util.List;
 import java.util.Optional;
 import java.util.Scanner;
@@ -65,7 +67,8 @@ public class AppSession {
                     "\n2) FIND USER BY USER_NAME" +
                     "\n3) FIND POST BY POST_ID" +
                     "\n4) FIND POSTS BY TAG_NAME" +
-                    "\n5) LOG OUT");
+                    "\n5) ACCOUNT SETTINGS" +
+                    "\n6) LOG OUT");
             command = scanner.nextLine();
 
             switch (command) {
@@ -87,7 +90,9 @@ public class AppSession {
                         System.out.println("Select command: " +
                                 "\n1) SHOW ALL POSTS" +
                                 "\n2) FOLLOW / UNFOLLOW USER" +
-                                "\n3) GO BACK");
+                                "\n3) SHOW FOLLOWERS" +
+                                "\n4) SHOW FOLLOWED USERS" +
+                                "\n5) GO BACK");
                         command = scanner.nextLine();
                         switch (command) {
                             case "1":
@@ -107,8 +112,15 @@ public class AppSession {
                                 }
                                 break;
                             case "3":
+                                suD.showFollowers(foundUser);
+                                break;
+                            case "4":
+                                suD.showFollowedUsers(foundUser);
+                                break;
+                            case "5":
                                 setFoundUser(null);
                                 break;
+
                             default:
                                 System.out.println("Command unknown.");
                                 break;
@@ -181,6 +193,103 @@ public class AppSession {
                     postByTag.ifPresent(posts -> posts.forEach(pD::showPost));
                     break;
                 case "5":
+                    setFoundUser(loggedUser);
+                    do {
+                        System.out.println("Select command: " +
+                                "\n1) CHANGE PASSWORD" +
+                                "\n2) CHANGE USER_NAME" +
+                                "\n3) CHANGE AVATAR" +
+                                "\n4) SET ACCOUNT TO NON-PRIVATE / PRIVATE" +
+                                "\n5) GO BACK");
+
+                        command = scanner.nextLine();
+                        switch (command) {
+                            case "1":
+                                System.err.println("Insert OLD password:");
+                                String oldPassword = scanner.nextLine();
+
+                                if (foundUser.getPassword().equals(oldPassword)) {
+                                    boolean passwordMatch = false;
+                                    do {
+                                        System.err.println("Insert NEW password:");
+                                        String newPassword1 = scanner.nextLine();
+                                        System.err.println("Repeat NEW password:");
+                                        String newPassword2 = scanner.nextLine();
+                                        passwordMatch = (newPassword1.equals(newPassword2)
+                                                && !newPassword1.equals(oldPassword));
+                                        if (passwordMatch) {
+                                            foundUser.setPassword(newPassword1);
+                                            System.err.println("Password successfully changed.");
+                                            suD.saveOrUpdate(foundUser);
+                                        } else if (newPassword1.equals(oldPassword)) {
+                                            System.err.println("New password can't be the same as old password");
+                                        } else {
+                                            System.err.println("Passwords don't match");
+                                        }
+                                    } while (!passwordMatch);
+
+                                } else {
+                                    System.err.println("Wrong password.");
+                                }
+
+                                break;
+                            case "2":
+                                System.err.println("Insert NEW userName:");
+                                String newUserName = scanner.nextLine();
+
+                                while (newUserName.length() < 5 || newUserName.length() > 20) {
+
+                                    if (newUserName.length() < 5) {
+                                        System.out.println("Given userName is too short (min.5 - max.20 characters).");
+                                    } else {
+                                        System.out.println("Given userName is too long (min.5 - max.20 characters).");
+                                    }
+                                    System.out.println(" Select different userName: ");
+                                    newUserName = scanner.nextLine().toLowerCase();
+                                }
+                                foundUser.setUserName(newUserName);
+                                suD.saveOrUpdate(foundUser);
+                                System.err.println("userName successfully changeg to: <" + foundUser.getUserName() + ">");
+                                break;
+                            case "3":
+                                System.err.println("Select NEW avatar:");
+                                String avatar = scanner.nextLine();
+
+                                while (avatar.length() < 5 || avatar.length() > 20) {
+
+                                    if (avatar.length() < 5) {
+                                        System.out.println("Given avatar is too small (min.5 - max.20 characters).");
+                                    } else {
+                                        System.out.println("Given avatar is too big (min.5 - max.20 characters).");
+                                    }
+                                    System.out.println(" Select different avatar: ");
+                                    avatar = scanner.nextLine().toLowerCase();
+                                }
+                                foundUser.setAvatar(avatar);
+                                suD.saveOrUpdate(foundUser);
+                                System.err.println("Avatar successfully changeg to: <" + foundUser.getAvatar() + ">");
+
+                                break;
+                            case "4":
+                                if (!foundUser.isPrivateAccount()) {
+                                    foundUser.setPrivateAccount(true);
+                                    System.err.println("Account set to PRIVATE");
+                                } else {
+                                    foundUser.setPrivateAccount(false);
+                                    System.err.println("Account set to NON-PRIVATE");
+                                }
+                                suD.saveOrUpdate(foundUser);
+                                break;
+                            case "5":
+                                setFoundUser(null);
+                                break;
+                            default:
+                                System.out.println("Command unknown.");
+                                break;
+                        }
+                    } while (foundUser != null);
+                    break;
+                case "6":
                     System.out.println("Logging out. See you soon!");
                     loggedUser = null;
                     isLoggedIn = false;
