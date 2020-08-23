@@ -145,20 +145,35 @@ public class PostDao {
         try (Session session = sessionFactory.openSession()) {
             transaction = session.beginTransaction();
 
-            // TODO: zapytanie find - szukanie po encjach
-            Optional<LikeBadge> op = post.getLikeBadges()
-                    .stream()
-                    .filter(fi -> fi.getServiceUser().equals(loggedUser))
-                    .findFirst();
-            LikeBadge lbBeingRemoved = op.get();
+//            // TODO: zapytanie find - szukanie po encjach
+//            Optional<LikeBadge> op = post.getLikeBadges()
+//                    .stream()
+//                    .filter(fi -> fi.getServiceUser().equals(loggedUser))
+//                    .findFirst();
+//            LikeBadge lbBeingRemoved = op.get();
 
-            // jak znajdziesz likebadge
-            // to ten kod zostaje
-            post.getLikeBadges().remove(lbBeingRemoved);
+            CriteriaBuilder cb = session.getCriteriaBuilder();
+            CriteriaQuery<LikeBadge> criteriaQuery = cb.createQuery(LikeBadge.class);
+            Root<LikeBadge> rootTable = criteriaQuery.from(LikeBadge.class);
+
+            criteriaQuery.select(rootTable)
+                    .where(
+                            cb.and(
+                                    cb.equal(rootTable.get("serviceUser"), loggedUser),
+                                    cb.equal(rootTable.get("post"), post)
+                            )
+                    );
+
+            Optional<LikeBadge> singleResult = Optional.ofNullable(session.createQuery(criteriaQuery).getSingleResult());
+            LikeBadge lbBeingRemoved = singleResult.get();
             loggedUser.getLikeBadges().remove(lbBeingRemoved);
 
-            session.saveOrUpdate(post);
-            session.saveOrUpdate(loggedUser);
+            lbBeingRemoved.setPost(null);
+            lbBeingRemoved.setServiceUser(null);
+            session.saveOrUpdate(lbBeingRemoved);
+
+            post.getLikeBadges().remove(lbBeingRemoved);
+            session.delete(lbBeingRemoved);
 
             transaction.commit();
         } catch (HibernateException he) {
@@ -242,8 +257,8 @@ public class PostDao {
 
         ServiceUser op = post.getOriginalPoster();
 
+        System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
         System.out.println(op.getAvatar() + " <" + op.getUserName() + "> :");
-        System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
 
         System.out.println("{postID: " + post.getPostId()
                 + "; postStatus: " + post.getPostType()
@@ -252,19 +267,20 @@ public class PostDao {
             System.out.println("{Comment to  post(postID: " + post.getMainPost().getPostId() + ")}");
         }
 
-        System.out.println("-----------------------------------");
+        System.out.println("---------------------------------------------");
         System.out.println("<p> " + post.getContent() + " </p>");
-        System.out.println("-----------------------------------");
+        System.out.println("---------------------------------------------");
 
         System.out.println("{comments: (" + post.getComments().size()
                 + ") ; likes: (" + post.getLikeBadges().size()
                 + ") ; forwards: (" + post.getForwardBadges().size() + ")}");
 
-        System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+        System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
     }
 
     public void showAllComments(Post post) {
         post.getComments().forEach(this::showPost);
     }
+
 
 }
