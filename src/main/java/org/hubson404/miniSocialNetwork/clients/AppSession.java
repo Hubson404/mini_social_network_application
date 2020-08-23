@@ -3,14 +3,14 @@ package org.hubson404.miniSocialNetwork.clients;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.hubson404.miniSocialNetwork.database.daoClasses.EntityDao;
-import org.hubson404.miniSocialNetwork.database.daoClasses.PostDao;
-import org.hubson404.miniSocialNetwork.database.daoClasses.ServiceUserDao;
-import org.hubson404.miniSocialNetwork.model.FollowInstance;
+import org.hubson404.miniSocialNetwork.database.daoClasses.*;
+import org.hubson404.miniSocialNetwork.model.*;
 import org.hubson404.miniSocialNetwork.model.LikeBadge;
 import org.hubson404.miniSocialNetwork.model.Post;
 import org.hubson404.miniSocialNetwork.model.ServiceUser;
+import org.hubson404.miniSocialNetwork.model.utils.PostType;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.Scanner;
 
@@ -28,7 +28,6 @@ public class AppSession {
     private final EntityDao<FollowInstance> fiD = new EntityDao<>();
     private final EntityDao<LikeBadge> lbD = new EntityDao<>();
     private final ServiceUserDao suD = new ServiceUserDao();
-    private final PostingClient postingClient = new PostingClient();
 
     public void openSession(Scanner scanner) {
         String greeting = "Welcome to the MiniSocialNetwork.";
@@ -71,8 +70,7 @@ public class AppSession {
 
             switch (command) {
                 case "1":
-                    Post post = postingClient.writePost(scanner, loggedUser);
-                    pD.saveOrUpdate(post);
+                    pD.writePost(scanner, loggedUser, PostType.ORIGINAL);
                     break;
 
                 case "2":
@@ -93,7 +91,7 @@ public class AppSession {
                         command = scanner.nextLine();
                         switch (command) {
                             case "1":
-                                suD.getLatestPosts(foundUser).forEach(postingClient::showPost);
+                                suD.getLatestPosts(foundUser).forEach(pD::showPost);
                                 break;
                             case "2":
                                 if (loggedUser.equals(foundUser)) {
@@ -129,7 +127,7 @@ public class AppSession {
                     opPost.ifPresent(this::setFoundPost);
 
                     while (opPost.isPresent() && foundPost != null) {
-                        postingClient.showPost(foundPost);
+                        pD.showPost(foundPost);
                         System.out.println("Select command: " +
                                 "\n1) COMMENT POST" +
                                 "\n2) LIKE / UN-LIKE POST" +
@@ -139,9 +137,11 @@ public class AppSession {
                         command = scanner.nextLine();
                         switch (command) {
                             case "1":
-                                Post comment = postingClient.writeComment(scanner, loggedUser);
-                                pD.saveOrUpdate(comment);
-                                pD.commentPost(comment, foundPost);
+                                Optional<Post> optionalComment = pD.writePost(scanner, loggedUser, PostType.COMMENT);
+                                if (optionalComment.isPresent()) {
+                                    Post comment = optionalComment.get();
+                                    pD.commentPost(comment, foundPost);
+                                }
                                 break;
                             case "2":
                                 if (pD.isLiked(loggedUser, foundPost)) {
@@ -170,7 +170,8 @@ public class AppSession {
                 case "4":
                     System.out.println("Insert searched tagName: ");
                     String tagName = scanner.nextLine();
-                    pD.findPostByTag(tagName).forEach(postingClient::showPost);
+                    Optional<List<Post>> postByTag = pD.findPostByTag(tagName);
+                    postByTag.ifPresent(posts -> posts.forEach(pD::showPost));
                     break;
                 case "5":
                     System.out.println("Logging out. See you soon!");

@@ -7,13 +7,16 @@ import org.hibernate.Transaction;
 import org.hubson404.miniSocialNetwork.clients.TaggingManager;
 import org.hubson404.miniSocialNetwork.database.HibernateUtil;
 import org.hubson404.miniSocialNetwork.model.*;
+import org.hubson404.miniSocialNetwork.model.utils.PostType;
 
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.Scanner;
 
 public class PostDao {
     public void saveOrUpdate(Post post) {
@@ -23,8 +26,8 @@ public class PostDao {
         try (Session session = sessionFactory.openSession()) {
             transaction = session.beginTransaction();
             session.saveOrUpdate(post);
-            new TaggingManager().manageTags(post);
-            session.saveOrUpdate(post);
+//            new TaggingManager().manageTags(post);
+//            session.saveOrUpdate(post);
 
             transaction.commit();
         } catch (HibernateException he) {
@@ -45,16 +48,22 @@ public class PostDao {
         return Optional.empty();
     }
 
-    public List<Post> findPostByTag(String tagName) {
+    public Optional<List<Post>> findPostByTag(String tagName) {
         List<Post> list = new ArrayList<>();
 
-        Tag tag = new TagDao().findByTagName(tagName).get();
+        Optional<Tag> op = new TagDao().findByTagName(tagName);
 
-        List<Post> all = findAll();
+        if (op.isPresent()) {
+            Tag tag = op.get();
+            List<Post> all = this.findAll();
+            all.stream().filter(post -> post.getIncludedTags().contains(tag)).forEach(list::add);
 
-        all.stream().filter(post -> post.getIncludedTags().contains(tag)).forEach(list::add);
+            return Optional.ofNullable(list);
 
-        return list;
+        } else {
+            System.err.println("Given tag doesn't exist.");
+            return Optional.empty();
+        }
     }
 
     public void delete(Post post) {
@@ -115,10 +124,10 @@ public class PostDao {
 
             LikeBadge lb = new LikeBadge(loggedUser, post);
             session.saveOrUpdate(lb);
-//            post.getLikeBadges().add(lb);
-//            loggedUser.getLikeBadges().add(lb); // todo: przetestuj sobie
 
-            session.saveOrUpdate(loggedUser);
+            loggedUser.getLikeBadges().add(lb); // todo: przetestuj sobie
+            post.getLikeBadges().add(lb);
+
             session.saveOrUpdate(post);
 
             transaction.commit();
@@ -147,10 +156,9 @@ public class PostDao {
             // to ten kod zostaje
             post.getLikeBadges().remove(lbBeingRemoved);
             loggedUser.getLikeBadges().remove(lbBeingRemoved);
-            session.saveOrUpdate(lbBeingRemoved);
 
-            session.saveOrUpdate(loggedUser);
             session.saveOrUpdate(post);
+            session.saveOrUpdate(loggedUser);
 
             transaction.commit();
         } catch (HibernateException he) {
@@ -166,6 +174,47 @@ public class PostDao {
                 .map(LikeBadge::getServiceUser)
                 .anyMatch(u -> u.equals(loggedUser));
         return isPresent;
+    }
+
+
+    public Optional<Post> writePost(Scanner scanner, ServiceUser loggedUser, PostType postType) {
+        SessionFactory sessionFactory = HibernateUtil.getOurSessionFactory();
+        Transaction transaction = null;
+
+        String postContent;
+        System.out.println("Write your message: ");
+        postContent = scanner.nextLine();
+        Post post = new Post(postContent, postType, loggedUser);
+
+        try (Session session = sessionFactory.openSession()) {
+            transaction = session.beginTransaction();
+
+            System.out.println("Message posted:\n" + loggedUser.getAvatar() + "\n<"
+                    + loggedUser.getAccountName() + "> : \"" + postContent + "\"");
+
+            session.saveOrUpdate(post);
+
+            transaction.commit();
+
+        } catch (HibernateException he) {
+            if (transaction != null) {
+                transaction.rollback();
+            }
+        }
+
+        try (Session session = sessionFactory.openSession()) {
+            transaction = session.beginTransaction();
+
+            new TaggingManager().manageTags(post);
+            session.saveOrUpdate(post);
+
+            transaction.commit();
+        } catch (HibernateException he) {
+            if (transaction != null) {
+                transaction.rollback();
+            }
+        }
+        return Optional.ofNullable(post);
     }
 
     public void commentPost(Post commentPost, Post mainPost) {
@@ -188,4 +237,34 @@ public class PostDao {
             }
         }
     }
+
+    public void showPost(Post post) {
+
+        ServiceUser op = post.getOriginalPoster();
+
+        System.out.println(op.getAvatar() + " <" + op.getUserName() + "> :");
+        System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+
+        System.out.println("{postID: " + post.getPostId()
+                + "; postStatus: " + post.getPostType()
+                + "; date: " + post.getCreateDate().format(DateTimeFormatter.ofPattern("dd-MM-yyyy")));
+        if (post.getPostType() == PostType.COMMENT) {
+            System.out.println("{Comment to  post(postID: " + post.getMainPost().getPostId() + ")}");
+        }
+
+        System.out.println("-----------------------------------");
+        System.out.println("<p> " + post.getContent() + " </p>");
+        System.out.println("-----------------------------------");
+
+        System.out.println("{comments: (" + post.getComments().size()
+                + ") ; likes: (" + post.getLikeBadges().size()
+                + ") ; forwards: (" + post.getForwardBadges().size() + ")}");
+
+        System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+    }
+
+    public void showAllComments(Post post) {
+        post.getComments().forEach(this::showPost);
+    }
+
 }

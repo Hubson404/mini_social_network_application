@@ -82,7 +82,7 @@ public class TagDao {
         } catch (HibernateException he) {
             he.printStackTrace();
         } catch (NoResultException e) {
-            System.err.println("User <" + tagName + "> not found.");
+            System.err.println("Tag #" + tagName + " not found.");
         }
         return Optional.empty();
     }
@@ -125,11 +125,11 @@ public class TagDao {
         try (Session session = sessionFactory.openSession()) {
             transaction = session.beginTransaction();
 
-            post.getIncludedTags().add(tag);
+//            post.getIncludedTags().add(tag);
             tag.getTaggedPosts().add(post);
 
             session.saveOrUpdate(tag);
-            session.saveOrUpdate(post);
+//            session.saveOrUpdate(post);
 
             transaction.commit();
         } catch (HibernateException he) {

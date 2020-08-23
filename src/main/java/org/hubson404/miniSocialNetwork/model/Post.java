@@ -2,6 +2,7 @@ package org.hubson404.miniSocialNetwork.model;
 
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.Fetch;
 import org.hubson404.miniSocialNetwork.model.utils.PostType;
 
 import javax.persistence.*;
@@ -26,7 +27,7 @@ public class Post {
     private LocalDateTime createDate;
     private PostType postType;
 
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne
     @EqualsAndHashCode.Exclude
     @ToString.Exclude
     private ServiceUser originalPoster;
@@ -34,14 +35,15 @@ public class Post {
     @OneToMany(mappedBy = "post", fetch = FetchType.EAGER, orphanRemoval = true)
     @EqualsAndHashCode.Exclude
     @ToString.Exclude
-    private Set<LikeBadge> likeBadges;
+    private Set<LikeBadge> likeBadges = new HashSet<>();
 
     @OneToMany(mappedBy = "post", fetch = FetchType.EAGER, orphanRemoval = true)
     @EqualsAndHashCode.Exclude
     @ToString.Exclude
-    private Set<ForwardBadge> forwardBadges;
+    private Set<ForwardBadge> forwardBadges = new HashSet<>();
+    ;
 
-    @ManyToMany(mappedBy = "taggedPosts",fetch = FetchType.EAGER)
+    @ManyToMany(mappedBy = "taggedPosts", fetch = FetchType.EAGER)
     @EqualsAndHashCode.Exclude
     @ToString.Exclude
     private Set<Tag> includedTags = new HashSet<>();
@@ -49,7 +51,10 @@ public class Post {
     @OneToMany(fetch = FetchType.EAGER)
     @EqualsAndHashCode.Exclude
     @ToString.Exclude
-    private Set<Post> comments;
+    @JoinTable(name = "mainPost_comment",
+            joinColumns = {@JoinColumn(name = "fk_mainPost")},
+            inverseJoinColumns = {@JoinColumn(name = "fk_comment")})
+    private Set<Post> comments = new HashSet<>();
 
     @ManyToOne
     @EqualsAndHashCode.Exclude

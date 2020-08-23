@@ -1,6 +1,5 @@
 package org.hubson404.miniSocialNetwork.clients;
 
-import org.hubson404.miniSocialNetwork.database.daoClasses.EntityDao;
 import org.hubson404.miniSocialNetwork.database.daoClasses.TagDao;
 import org.hubson404.miniSocialNetwork.model.Post;
 import org.hubson404.miniSocialNetwork.model.Tag;
@@ -9,12 +8,12 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 public class TaggingManager {
+
     public void manageTags(Post post) {
-        Map<String, Long> tagIdNameMap = new HashMap<>();
 
         TagDao tD = new TagDao();
-        EntityDao<Post> pD = new EntityDao<>();
-        tagIdNameMap = tD.findAll(Tag.class)
+
+        Map<String, Long> tagIdNameMap = tD.findAll(Tag.class)
                 .stream().collect(Collectors.toMap(tag -> tag.getTagName().toLowerCase(), Tag::getTagId));
 
         for (String tag : lookupTags(post)) {
@@ -27,7 +26,7 @@ public class TaggingManager {
                 tagInstance = new Tag(tag);
                 tD.saveOrUpdate(tagInstance);
             }
-            tD.addTag(tagInstance,post);
+            tD.addTag(tagInstance, post);
         }
     }
 
@@ -56,8 +55,7 @@ public class TaggingManager {
             s = s.trim();
         }
 
-        List<String> wordList = Arrays.asList(loremIpsumArray)
-                .stream()
+        List<String> wordList = Arrays.stream(loremIpsumArray)
                 .filter(s -> s.length() > 0)
                 .map(String::toLowerCase)
                 .collect(Collectors.toList());
