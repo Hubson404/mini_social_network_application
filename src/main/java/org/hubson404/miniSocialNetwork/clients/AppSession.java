@@ -83,7 +83,7 @@ public class AppSession {
                     op.ifPresent(this::setFoundUser);
 
                     while (foundUser != null && op.isPresent()) {
-                        InteractionClient.showUserPage(foundUser, loggedUser);
+                        suD.showUserPage(foundUser, loggedUser);
                         System.out.println("Select command: " +
                                 "\n1) SHOW ALL POSTS" +
                                 "\n2) FOLLOW / UNFOLLOW USER" +
