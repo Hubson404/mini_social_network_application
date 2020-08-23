@@ -29,6 +29,8 @@ public class ServiceUser implements UserNameSearchable {
     @CreationTimestamp
     private LocalDateTime createDate;
     private String avatar;
+
+    @Enumerated(EnumType.STRING)
     private AccountStatus accountStatus;
     private boolean privateAccount;
     private boolean isDeleted;

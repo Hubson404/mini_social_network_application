@@ -23,6 +23,8 @@ public class Post {
     private boolean isEdited;
     @CreationTimestamp
     private LocalDateTime createDate;
+
+    @Enumerated(EnumType.STRING)
     private PostType postType;
 
     @ManyToOne
