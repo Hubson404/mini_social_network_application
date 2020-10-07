@@ -17,10 +17,8 @@ public class SignInClient {
         boolean isPrivate = isAccountPrivate(scanner);
         String avatar = "( ＾◡＾)";
 
-        ServiceUser serviceUser = new ServiceUser(login, password,
+        return new ServiceUser(login, password,
                 accountName, accountName, avatar, isPrivate);
-
-        return serviceUser;
     }
 
     private static boolean isAccountPrivate(Scanner scanner) {

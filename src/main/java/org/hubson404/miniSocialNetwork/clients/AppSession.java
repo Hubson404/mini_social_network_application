@@ -243,7 +243,7 @@ public class AppSession {
                 String oldPassword = scanner.nextLine();
 
                 if (foundUser.getPassword().equals(oldPassword)) {
-                    boolean passwordMatch = false;
+                    boolean passwordMatch;
                     do {
                         System.err.println("Insert NEW password:");
                         String newPassword1 = scanner.nextLine();

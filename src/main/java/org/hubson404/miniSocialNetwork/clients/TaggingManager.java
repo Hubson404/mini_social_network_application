@@ -30,7 +30,7 @@ public class TaggingManager {
         }
     }
 
-    private static Set<String> lookupTags(Post post) {
+    private Set<String> lookupTags(Post post) {
 
         Set<String> includedTagsSet = getWords(post)
                 .stream()
@@ -42,7 +42,7 @@ public class TaggingManager {
         return includedTagsSet;
     }
 
-    private static List<String> getWords(Post post) {
+    private List<String> getWords(Post post) {
 
         String postContent = post.getContent();
 
